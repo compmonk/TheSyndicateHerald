@@ -4,8 +4,6 @@
 
 Zubair Shaikh
 
-<div style="page-break-after: always;"></div>
-
 ### Users
 
 The Users collection will store all users and their information and preferences, likes and dislikes. 
@@ -57,6 +55,14 @@ Users will be able to login, update their profile, and like/dislike news post an
  }
 ```
 
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+  
 | Name              | Type                      | Description                                                       |
 | ----------------- |---------------------------| ------------------------------------------------------------------|
 | _id               | UUID string               | A UUID to represent the User                                      |
@@ -108,30 +114,10 @@ Users will be able to login, update their profile, and like/dislike news post an
 | from          | UUID string       | A UUID referencing the User who shared the News   |
 | receivedAt    | datetime string   | A datetime string when the News was shared        |
 
-<div style="page-break-after: always;"></div>
-
-### Sessions
-The Sessions document will store the User login sessions and. The `Sessions._id` will be used as the session if for the 
-User
-```
-{
-    "_id": "59edb1a7-41f7-4466-a26a-399ccc2271e7"
-    "userId": "8d12cb07-c008-4785-9c66-ddaae4d390bb",
-    "startTime": "2019-11-10T19:51:00Z",
-    "endTime": "2019-11-10T20:43:38Z",
-    "isActive": false
-}
-```
-
-| Name          | Type              | Description                                                   |
-| --------------|-------------------| --------------------------------------------------------------|
-| _id           | UUID string       | A UUID to represent a Session                                 |
-| userId        | UUID string       | A UUID referencing the User                                   |
-| startTime     | datetime string   | Start time of the session                                     |
-| endTime       | datetime string   | End time of the session                                       |
-| isActive      | boolean           | Boolean value to represent if the session is active or not    |
-
-<div style="page-break-after: always;"></div>
+<br/>
+<br/>
+<br/>
+<br/>
 
 ### News
 
@@ -146,14 +132,15 @@ The News collection will store all the news that has been liked/disliked or shar
     },
     "author": "Chris Irvine",
     "title": "Alabama's Tua Tagovailoa carted off field 'screaming in pain' - Fox News",
-    "description": "Alabama quarterback and potential Number 1 overall draft pick Tua Tagovailoa was carted off the field
-    Saturday with an apparent hip injury after being dragged down by two Mississippi State defenders.",
+    "description": "Alabama quarterback and potential Number 1 overall draft pick Tua Tagovailoa was carted
+    off the field Saturday with an apparent hip injury after being dragged down by two Mississippi State
+    defenders.",
     "url": "https://www.foxnews.com/sports/alabama-tua-tagovailoa-carted-off-field",
     "urlToImage": "https://static.foxnews.com/foxnews.com/content/uploads/2019/11/Tua-2-Getty.jpg",
     "publishedAt": "2019-11-16T19:16:07Z",
-    "content": "Alabama quarterback and potential No. 1 overall draft pick Tua Tagovailoa was carted off the field Saturday 
-    with an apparent hip injury after being dragged down by two Mississippi State defenders.\r\nWith three minutes left in 
-    the second quarter, Tagovailoa scr… [+2139 chars]"
+    "content": "Alabama quarterback and potential No. 1 overall draft pick Tua Tagovailoa was carted off
+    the field Saturday with an apparent hip injury after being dragged down by two Mississippi State
+    defenders.\r\nWith three minutes left in the second quarter, Tagovailoa scr… [+2139 chars]"
     "likedBy": [
         "14ce2dfb-de99-47b9-9347-30b8db7db50e"
     ],
@@ -190,3 +177,26 @@ The News collection will store all the news that has been liked/disliked or shar
 | ------|-----------| ------------------------------|
 | id    | string    | id string of the News source  |
 | name  | string    | Name of the News source       |
+
+<br/>
+
+### Sessions
+The Sessions document will store the User login sessions and. The `Sessions._id` will be used as the session id for the 
+User
+```
+{
+    "_id": "59edb1a7-41f7-4466-a26a-399ccc2271e7"
+    "userId": "8d12cb07-c008-4785-9c66-ddaae4d390bb",
+    "startTime": "2019-11-10T19:51:00Z",
+    "endTime": "2019-11-10T20:43:38Z",
+    "isActive": false
+}
+```
+
+| Name          | Type              | Description                                                   |
+| --------------|-------------------| --------------------------------------------------------------|
+| _id           | UUID string       | A UUID to represent a Session                                 |
+| userId        | UUID string       | A UUID referencing the User                                   |
+| startTime     | datetime string   | Start time of the session                                     |
+| endTime       | datetime string   | End time of the session                                       |
+| isActive      | boolean           | Boolean value to represent if the session is active or not    |
