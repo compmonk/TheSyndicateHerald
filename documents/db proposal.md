@@ -4,6 +4,7 @@
 
 Zubair Shaikh
 
+<div style="page-break-after: always;"></div>
 
 ### Users
 
@@ -71,6 +72,8 @@ Users will be able to login, update their profile, and like/dislike news post an
 | sent              | array of News Sent        | Array of News Sent objects ie. news shared with other Users       |
 | received          | array of News Received    | Array of News Received objects ie. news shared by other Users     |
 
+<div style="page-break-after: always;"></div>
+
 ### News Sent
 ###### Sub document, not stored in separate collection
 
@@ -105,6 +108,7 @@ Users will be able to login, update their profile, and like/dislike news post an
 | from          | UUID string       | A UUID referencing the User who shared the News   |
 | receivedAt    | datetime string   | A datetime string when the News was shared        |
 
+<div style="page-break-after: always;"></div>
 
 ### Sessions
 The Sessions document will store the User login sessions and. The `Sessions._id` will be used as the session if for the 
@@ -127,6 +131,7 @@ User
 | endTime       | datetime string   | End time of the session                                       |
 | isActive      | boolean           | Boolean value to represent if the session is active or not    |
 
+<div style="page-break-after: always;"></div>
 
 ### News
 
