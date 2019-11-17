@@ -11,7 +11,7 @@ Users will be able to login, update their profile, and like/dislike news post an
 
 ```
 {
-    "_id":"14ce2dfb-de99-47b9-9347-30b8db7db50e",
+    "_id":UUID("14ce2dfb-de99-47b9-9347-30b8db7db50e"),
     "firstName":"Harry",
     "lastName":"Potter",
     "username":"theboywholived",
@@ -27,28 +27,28 @@ Users will be able to login, update their profile, and like/dislike news post an
         "entertainment"
     ],
     "liked":[
-        "4d4e8646-f092-4733-9eb2-a04ed5e5a30c,
-        "50e49c7d-1c52-4f0f-a84a-464a6c1369ea"
+        UUID("4d4e8646-f092-4733-9eb2-a04ed5e5a30c"),
+        UUID("50e49c7d-1c52-4f0f-a84a-464a6c1369ea")
     ],
     "disLiked":[
-        "7c78a407-2ff3-470a-83b6-e311aa6b9a11"
+        UUID("7c78a407-2ff3-470a-83b6-e311aa6b9a11")
     ],
     "sent":[
         {
-            "newsId": "0e7bf31a-17d1-4a5f-a3b4-aae15973372e"
-            "to": "5d91e9ce-1aa4-459e-ae62-b5c3e0393acf",
+            "newsId": UUID("0e7bf31a-17d1-4a5f-a3b4-aae15973372e")
+            "to": UUID("5d91e9ce-1aa4-459e-ae62-b5c3e0393acf"),
             "sentAt": "2019-11-16T19:16:07Z"
         },
         {
-            "newsId": "f2abbb11-d25b-438b-8bab-1fd0a247252f"
-            "to": "f2abbb11-d25b-438b-8bab-1fd0a247252f",
+            "newsId": UUID("f2abbb11-d25b-438b-8bab-1fd0a247252f")
+            "to": UUID("f2abbb11-d25b-438b-8bab-1fd0a247252f"),
             "sentAt": "2019-10-15T10:21:55Z"
         }
     ]
     "received":[
         {
-            "newsId": "7cc89ecb-a579-40f7-906f-58463767e8fe"
-            "from": "662d4641-b678-4468-927d-b4d872f9407c",
+            "newsId": UUID("7cc89ecb-a579-40f7-906f-58463767e8fe")
+            "from": UUID("662d4641-b678-4468-927d-b4d872f9407c"),
             "receivedAt": "2019-11-10T19:51:00Z"
         }
     ],
@@ -85,8 +85,8 @@ Users will be able to login, update their profile, and like/dislike news post an
 
 ```
 {
-    "newsId": "0e7bf31a-17d1-4a5f-a3b4-aae15973372e"
-    "to": "5d91e9ce-1aa4-459e-ae62-b5c3e0393acf",
+    "newsId": UUID("0e7bf31a-17d1-4a5f-a3b4-aae15973372e")
+    "to": UUID("5d91e9ce-1aa4-459e-ae62-b5c3e0393acf"),
     "sentAt": "2019-11-16T19:16:07Z"
 }
 ```
@@ -102,8 +102,8 @@ Users will be able to login, update their profile, and like/dislike news post an
 
 ```
 {
-    "newsId": "7cc89ecb-a579-40f7-906f-58463767e8fe"
-    "from": "662d4641-b678-4468-927d-b4d872f9407c",
+    "newsId": UUID("7cc89ecb-a579-40f7-906f-58463767e8fe")
+    "from": UUID("662d4641-b678-4468-927d-b4d872f9407c"),
     "receivedAt": "2019-11-10T19:51:00Z"
 }
 ```
@@ -125,7 +125,7 @@ The News collection will store all the news that has been liked/disliked or shar
 
 ```
 {
-    "_id":"76eb7d84-af99-451d-8b0a-ea6d4a5626f7",
+    "_id":UUID("76eb7d84-af99-451d-8b0a-ea6d4a5626f7"),
     source": {
         "id": "fox-news",
         "name": "Fox News"
@@ -142,7 +142,7 @@ The News collection will store all the news that has been liked/disliked or shar
     the field Saturday with an apparent hip injury after being dragged down by two Mississippi State
     defenders.\r\nWith three minutes left in the second quarter, Tagovailoa scr… [+2139 chars]"
     "likedBy": [
-        "14ce2dfb-de99-47b9-9347-30b8db7db50e"
+        UUID("14ce2dfb-de99-47b9-9347-30b8db7db50e")
     ],
     "dislikedBy": [
     ]
@@ -185,8 +185,8 @@ The Sessions document will store the User login sessions and. The `Sessions._id`
 User
 ```
 {
-    "_id": "59edb1a7-41f7-4466-a26a-399ccc2271e7"
-    "userId": "8d12cb07-c008-4785-9c66-ddaae4d390bb",
+    "_id": UUID("59edb1a7-41f7-4466-a26a-399ccc2271e7")
+    "userId": UUID("8d12cb07-c008-4785-9c66-ddaae4d390bb"),
     "startTime": "2019-11-10T19:51:00Z",
     "endTime": "2019-11-10T20:43:38Z",
     "isActive": false
