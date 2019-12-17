@@ -1,11 +1,11 @@
 const MUUID = require('uuid-mongodb');
 
-const {isEmail} = require('validator/lib/isEmail');
-const {isUUID} = require('validator/lib/isUUID');
+const validator = require('validator');
+// const {isUUID} = require('validator/lib/isUUID');
 
 
 const bcrypt = require('bcryptjs');
-const salt = bcrypt.genSaltSync(16);
+const salt = bcrypt.genSaltSync(8);
 
 const collections = require("./collection");
 
@@ -44,10 +44,10 @@ async function addUser(newUser) {
         error.http_code = 400
     }
 
-    if (!isEmail("email")) {
-        errors['email'] = "invalid type";
-        error.http_code = 400
-    }
+    // if (!validator.isEmail("email")) {
+    //     errors['email'] = "invalid type";
+    //     error.http_code = 400
+    // }
 
     if (!newUser.hasOwnProperty("password")) {
         errors['password'] = "missing property";
@@ -62,6 +62,7 @@ async function addUser(newUser) {
 
     newUser._id = MUUID.v4();
     newUser.hashedPassword = bcrypt.hashSync(newUser.password, salt);
+    delete newUser.password;
     newUser.sources = [];
     newUser.categories = [];
     newUser.liked = [];
@@ -70,6 +71,16 @@ async function addUser(newUser) {
     newUser.received = [];
 
     const usersCollection = await users();
+
+    const user = await usersCollection.findOne({username: newUser.username});
+
+    if (user) {
+        errors['username'] = "username unavailable";
+        error.http_code = 400;
+        error.message = JSON.stringify({'errors': errors});
+        throw error
+    }
+
 
     const insertInfo = await usersCollection.insertOne(newUser);
 
@@ -150,18 +161,22 @@ async function getUserById(userId, ...projection) {
             });
             throw error
         }
-    } else if (!isUUID(userId)) {
-        errors['id'] = "id is not defined";
-        error.http_code = 400;
-        error.message = JSON.stringify({
-            errors: errors
-        });
-        throw error
+    } else {
+        try {
+            MUUID.from(userId);
+        } catch (e) {
+            errors['id'] = "id is not defined";
+            error.http_code = 400;
+            error.message = JSON.stringify({
+                errors: errors
+            });
+            throw error
+        }
     }
 
     const usersCollection = await users();
 
-    let user = null;
+    let user;
     if (projection.length) {
         user = await usersCollection.findOne({_id: userId}, {projection: projection});
     } else {
@@ -178,6 +193,51 @@ async function getUserById(userId, ...projection) {
 
     if (user === null) {
         errors['id'] = `user with id ${userId} doesn't exists`;
+        error.http_code = 404;
+        error.message = JSON.stringify({
+            errors: errors
+        });
+        throw error
+    }
+
+    return user;
+}
+
+async function getUserByUsername(username, ...projection) {
+    const error = new Error();
+    error.http_code = 200;
+    const errors = {};
+
+    if (username === undefined || userId === null) {
+        errors['username'] = "username is not defined";
+        error.http_code = 400
+    }
+
+    if (typeof username === "string") {
+        errors['username'] = "invalid type of username";
+        error.http_code = 400;
+    }
+
+    const usersCollection = await users();
+
+    let user;
+    if (projection.length) {
+        user = await usersCollection.findOne({username: username}, {projection: projection});
+    } else {
+        user = await usersCollection.findOne({username: username}, {
+            projection: {
+                "_id": false,
+                "hashedPassword": false,
+                "liked": false,
+                "disliked": false,
+                "sent": false,
+                "received": false
+            }
+        });
+    }
+
+    if (user === null) {
+        errors['id'] = `user with username ${username} doesn't exists`;
         error.http_code = 404;
         error.message = JSON.stringify({
             errors: errors
@@ -276,7 +336,7 @@ async function isAuthenticated(username, password) {
         throw error
     }
 
-    if(!bcrypt.compareSync(password, user.hashedPassword)) {
+    if (!bcrypt.compareSync(password, user.hashedPassword)) {
         errors['password'] = "Invalid password";
         error.http_code = 403;
         error.message = JSON.stringify({
@@ -285,16 +345,32 @@ async function isAuthenticated(username, password) {
         throw error
     }
 
-    return true;
+    return user;
+}
+
+async function getUsers() {
+    const usersCollection = await users();
+
+    return usersCollection.find({}, {
+        projection:
+            {
+                "_id": false,
+                "username": true,
+                "firstName": true,
+                "lastName": true,
+            }
+    }).toArray();
 }
 
 module.exports = {
     addUser,
     updateUser,
     getUserById,
+    getUserByUsername,
     usernameAvailable,
     userExists,
     getLiked,
     getShared,
-    isAuthenticated
+    isAuthenticated,
+    getUsers
 };

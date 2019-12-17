@@ -1,7 +1,5 @@
 const MUUID = require('uuid-mongodb');
 
-const {isUUID} = require('validator/lib/isUUID');
-
 const collections = require("./collection");
 
 const sessions = collections.sessions;
@@ -28,13 +26,17 @@ async function addSession(sessionId, userId) {
             });
             throw error
         }
-    } else if (!isUUID(sessionId)) {
-        errors['sessionId'] = "sessionId is not defined";
-        error.http_code = 400;
-        error.message = JSON.stringify({
-            errors: errors
-        });
-        throw error
+    } else {
+        try {
+            MUUID.from(sessionId)
+        } catch (e) {
+            errors['sessionId'] = "sessionId is not defined";
+            error.http_code = 400;
+            error.message = JSON.stringify({
+                errors: errors
+            });
+            throw error
+        }
     }
 
     try {
@@ -42,7 +44,7 @@ async function addSession(sessionId, userId) {
 
         const sessionsCollection = await sessions();
         let session = {
-            "_id": MUUID.from(sessionId),
+            "_id": sessionId,
             "userId": user._id,
             "startTime": new Date(),
             "isActive": true
@@ -127,9 +129,9 @@ async function endSession(sessionId) {
 
         const sessionsCollection = await sessions();
 
-        return await sessionsCollection.updateOne({_id: sessionId}, {$set: session})
+        return await sessionsCollection.updateOne({_id: session._id}, {$set: session})
             .then(async function (updateInfo) {
-                if (updateInfo.nModified === 0) {
+                if (updateInfo.modifiedCount === 0) {
                     error.message = JSON.stringify({
                         'error': "could not end session",
                         'object': session,
