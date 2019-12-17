@@ -1,24 +1,21 @@
-<table>
-    <tr>
-        <th>Source</th>
-        <th>Author</th>
-        <th>Title</th>
-        <th>Description</th>
-    </tr>
-    {{#each news}}
-        <tr>
-            <td>
-                {{this.source.name}}
-            </td>
-            <td>
-                {{this.author}}
-            </td>
-            <td>
-                {{this.title}}
-            </td>
-            <td>
-                {{this.description}}
-            </td>
-        </tr>
-    {{/each}}
-</table>
+<div class="container">
+    <div class="row">
+        {{#each news}}
+            <div class="col-md-12">
+                <div class="card" style="width: auto">
+                    <img class="card-img-top" src={{this.urlToImage}} alt="Card image cap">
+                    <div class="card-body">
+                            <h5 class="card-title">{{this.title}} - {{this.author}}</h5>
+<!--                            <h5 class="card-title float-right"></h5>-->
+                        <h6 class="card-text">{{this.description}}</h6>
+                        <p class="card-text">{{this.content}}</p>
+                        <div class="card-footer">
+                            <small class="text-muted">{{this.from}}</small>
+                            <a href={{this.url}} class="btn-sm btn-primary float-right">See More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>

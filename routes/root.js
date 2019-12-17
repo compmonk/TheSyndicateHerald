@@ -8,7 +8,6 @@ const users = require("../data/users");
 const sessions = require("../data/sessions");
 
 const router = express.Router();
-
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded());
 
@@ -19,7 +18,7 @@ router.get("/", async (request, response) => {
     if (isLoggedIn(request)) {
         response.redirect(`/${request.session.user.username}/`);
     } else {
-        response.render("home")
+        response.render("home", {layout: 'home'})
     }
 });
 

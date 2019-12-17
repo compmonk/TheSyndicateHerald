@@ -3,6 +3,8 @@ const exphbs = require('express-handlebars');
 
 const app = express();
 app.use(express.json());
+app.use("/node_modules", express.static(__dirname + "/node_modules"));
+app.use("/public", express.static(__dirname + "/public"));
 const configRoutes = require("./routes");
 
 configRoutes(app);
@@ -11,6 +13,7 @@ const port = 3000;
 
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
+app.set('view options', { layout: false });
 
 app.listen(port, () => {
     console.log("The server is up and running !!!");

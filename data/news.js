@@ -1,8 +1,6 @@
 const MUUID = require('uuid-mongodb');
 const uuidv1 = require('uuid/v1');
 
-const {isUUID} = require('validator/lib/isUUID');
-
 const collections = require("./collection");
 const newsCollection = collections.news;
 

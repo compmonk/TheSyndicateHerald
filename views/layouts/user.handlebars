@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <title>The Syndicate Herald</title>
+
+    <!--  Custom CSS  -->
+    <link rel="stylesheet" href="/public/css/site.css">
+
+    <!-- jQuery -->
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+
+    <!--  Bootstrap -->
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css">
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+
+    <!--  Select2  -->
+    <link rel="stylesheet" href="/node_modules/select2/dist/css/select2.css">
+    <link rel="stylesheet" href="/node_modules/select2-bootstrap-theme/dist/select2-bootstrap.css">
+    <script src="/node_modules/select2/dist/js/select2.full.js"></script>
+</head>
+<body>
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">The Syndicate Herald</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+
+            <li class="nav-item active">
+                <a class="nav-link" href={{url.feed}}>Feed<span class="sr-only">(current)</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href={{url.likes}}>Likes</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href={{url.shared}}>Shared</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href={{url.sessions}}>Session</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href={{url.profile}}>Profile</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/logout/">Logout</a>
+            </li>
+
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0 input-group col-md-4">
+            <input class="form-control my-sm-2" type="search" placeholder="keywords, source, category"
+                   aria-label="Search">
+            <div class="input-group-append">
+                <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
+            </div>
+        </form>
+
+
+    </div>
+</nav>
+{{{body}}}
+</body>
+</html>

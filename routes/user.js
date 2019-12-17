@@ -1,36 +1,56 @@
 const express = require("express");
-const router = express.Router();
+const moment = require('moment');
+const bodyParser = require("body-parser");
 
 const {isLoggedIn} = require("../core/login");
 const {newsapi} = require("../core/news");
 const users = require("../data/users");
 const sessions = require("../data/sessions");
 const userNews = require("../data/userNews");
+const jsonUtils = require("../public/js/jsonUtils");
+
+
+const router = express.Router();
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded());
 
 // user home page
 router.get("/", async (request, response) => {
     try {
         if (isLoggedIn(request)) {
-            let sources = [];
+
             newsapi.sources({
                 language: 'en',
                 country: 'us'
             }).then(res => {
-
-                sources = res.sources.map(function (source) {
+                let sources = res.sources.map(function (source) {
                     return {
                         id: source.id,
-                        name: source.name,
-                        description: source.description,
-                        url: source.url
+                        text: source.name
                     }
                 });
-
+                let sourcesSelected = request.session.user.sources.map(function (s) {
+                    const source = sources.filter((x) => (x.id === s))[0];
+                    return {
+                        id: source.id,
+                        text: source.text
+                    }
+                });
+                console.log(JSON.parse(JSON.stringify(sourcesSelected)));
                 response.render("user", {
                     user: request.session.user,
-                    sources: sources
+                    sources: sources,
+                    sourcesSelected: JSON.stringify(sourcesSelected),
+                    layout: 'user',
+                    url: {
+                        profile: `/${request.session.user.username}/`,
+                        feed: `/${request.session.user.username}/feed`,
+                        likes: `/${request.session.user.username}/likes`,
+                        sessions: `/${request.session.user.username}/sessions`,
+                        shared: `/${request.session.user.username}/shared`,
+                        search: `/${request.session.user.username}/search`
+                    }
                 })
-
             });
         } else {
             response.redirect("/")
@@ -41,15 +61,41 @@ router.get("/", async (request, response) => {
     }
 });
 
+router.post("/", async (request, response) => {
+    try {
+        if (request.body["sources"]) {
+            request.session.user = await users.updateUser(request.session.userID, request.body["sources"], true);
+        } else {
+            request.session.user = await users.updateUser(request.session.userID, result);
+        }
+
+        response.redirect(`/${request.session.user.username}/feed`)
+    } catch (e) {
+        response.status(e.http_code).send(e.message);
+    }
+});
+
+
 // user feeds
 router.get("/feed", async (request, response) => {
     try {
-        // const user = await users.getUserById(request.session.userID, {"sources": true});
         newsapi.v2.topHeadlines({
-            sources: 'bbc-news'
+            sources: request.session.user.sources.join()
         }).then(res => {
             response.render("feed", {
-                news: res["articles"]
+                news: res["articles"].map(function (article) {
+                    article.from = moment.duration(moment(article.publishedAt) - moment.now()).humanize(true)
+                    return article
+                }),
+                layout: 'user',
+                url: {
+                    profile: `/${request.session.user.username}/`,
+                    feed: `/${request.session.user.username}/feed`,
+                    likes: `/${request.session.user.username}/likes`,
+                    sessions: `/${request.session.user.username}/sessions`,
+                    shared: `/${request.session.user.username}/shared`,
+                    search: `/${request.session.user.username}/search`
+                }
             })
         });
     } catch (e) {
@@ -60,19 +106,52 @@ router.get("/feed", async (request, response) => {
 // user sessions
 router.get("/sessions", async (request, response) => {
     const sessionsList = await sessions.getSessionByUserId(request.session.userID);
-    response.render("sessions", {sessions: sessionsList})
+    response.render("sessions", {
+        sessions: sessionsList,
+        layout: 'user',
+        url: {
+            profile: `/${request.session.user.username}/`,
+            feed: `/${request.session.user.username}/feed`,
+            likes: `/${request.session.user.username}/likes`,
+            sessions: `/${request.session.user.username}/sessions`,
+            shared: `/${request.session.user.username}/shared`,
+            search: `/${request.session.user.username}/search`
+        }
+    })
 });
 
 // user liked and disliked news
 router.get("/likes", async (request, response) => {
     const likes = await users.getLiked(request.session.userID);
-    response.render("likes", {likes: likes})
+    response.render("likes", {
+        likes: likes,
+        layout: 'user',
+        url: {
+            profile: `/${request.session.user.username}/`,
+            feed: `/${request.session.user.username}/feed`,
+            likes: `/${request.session.user.username}/likes`,
+            sessions: `/${request.session.user.username}/sessions`,
+            shared: `/${request.session.user.username}/shared`,
+            search: `/${request.session.user.username}/search`
+        }
+    })
 });
 
 // user shared news
 router.get("/shared", async (request, response) => {
     const shared = await users.getShared(request.session.userID);
-    response.render("shared", {shared: shared})
+    response.render("shared", {
+        shared: shared,
+        layout: 'user',
+        url: {
+            profile: `/${request.session.user.username}/`,
+            feed: `/${request.session.user.username}/feed`,
+            likes: `/${request.session.user.username}/likes`,
+            sessions: `/${request.session.user.username}/sessions`,
+            shared: `/${request.session.user.username}/shared`,
+            search: `/${request.session.user.username}/search`
+        }
+    })
 });
 
 // like news web api
@@ -80,7 +159,7 @@ router.post("/like", async (request, response) => {
     try {
         await userNews.likeNews(request.session.userID, request.param("newsId"));
     } catch (e) {
-        response.status(400).json({errorMessage: e})
+        response.status(e.http_code).send(e)
     }
 });
 
@@ -89,7 +168,7 @@ router.post("/dislike", async (request, response) => {
     try {
         await userNews.dislikeNews(request.session.userID, request.param("newsId"));
     } catch (e) {
-        response.status(400).json({errorMessage: e})
+        response.status(e.http_code).send(e)
     }
 });
 
@@ -98,19 +177,40 @@ router.post("/share", async (request, response) => {
     try {
         await userNews.shareNews(request.session.userID, request.param("receiverIds"), request.param("newsId"));
     } catch (e) {
-        response.status(400).json({errorMessage: e})
+        response.status(e.http_code).send(e)
     }
 });
 
 // search news page
 router.get("/search", async (request, response) => {
-    response.render("search")
+    response.render("search", {
+        layout: 'user',
+        url: {
+            profile: `/${request.session.user.username}/`,
+            feed: `/${request.session.user.username}/feed`,
+            likes: `/${request.session.user.username}/likes`,
+            sessions: `/${request.session.user.username}/sessions`,
+            shared: `/${request.session.user.username}/shared`,
+            search: `/${request.session.user.username}/search`
+        }
+    })
 });
 
 // search news page
 router.post("/search", async (request, response) => {
     const news = [];
-    response.render("search", {news: news})
+    response.render("search", {
+        news: news,
+        layout: 'user',
+        url: {
+            profile: `/${request.session.user.username}/`,
+            feed: `/${request.session.user.username}/feed`,
+            likes: `/${request.session.user.username}/likes`,
+            sessions: `/${request.session.user.username}/sessions`,
+            shared: `/${request.session.user.username}/shared`,
+            search: `/${request.session.user.username}/search`
+        }
+    })
 });
 
 module.exports = router;

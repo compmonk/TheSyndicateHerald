@@ -1,8 +1,5 @@
 const MUUID = require('uuid-mongodb');
 
-const validator = require('validator');
-// const {isUUID} = require('validator/lib/isUUID');
-
 
 const bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(8);
@@ -99,7 +96,7 @@ async function addUser(newUser) {
     return await getUserById(newId);
 }
 
-async function updateUser(userId, updatedUser) {
+async function updateUser(userId, updatedUser, addSource = false) {
     const error = new Error();
     error.http_code = 200;
     const errors = {};
@@ -118,23 +115,39 @@ async function updateUser(userId, updatedUser) {
     }
 
     try {
-        await getUserById(userId);
+        const user = await getUserById(userId);
 
         const usersCollection = await users();
 
-        return await usersCollection.updateOne({_id: userId}, {$set: updatedUser})
-            .then(async function (updateInfo) {
-                if (updateInfo.nModified === 0) {
-                    error.message = JSON.stringify({
-                        'error': "could not update user",
-                        'object': updatedUser,
-                        'errors': errors
-                    });
-                    error.http_code = 400;
-                    throw error
-                }
-                return await getUserById(userId);
-            });
+        if (addSource) {
+            return await usersCollection.updateOne({_id: user._id}, {$push: {"sources" : {$each: updatedUser}}})
+                .then(async function (updateInfo) {
+                    if (updateInfo.modifiedCount === 0) {
+                        error.message = JSON.stringify({
+                            'error': "could not update user",
+                            'object': updatedUser,
+                            'errors': errors
+                        });
+                        error.http_code = 400;
+                        throw error
+                    }
+                    return await getUserById(userId);
+                });
+        } else {
+            return await usersCollection.updateOne({_id: user._id}, {$set: updatedUser})
+                .then(async function (updateInfo) {
+                    if (updateInfo.modifiedCount === 0) {
+                        error.message = JSON.stringify({
+                            'error': "could not update user",
+                            'object': updatedUser,
+                            'errors': errors
+                        });
+                        error.http_code = 400;
+                        throw error
+                    }
+                    return await getUserById(userId);
+                });
+        }
     } catch (e) {
         throw e
     }
