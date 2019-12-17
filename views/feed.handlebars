@@ -1,0 +1,24 @@
+<table>
+    <tr>
+        <th>Source</th>
+        <th>Author</th>
+        <th>Title</th>
+        <th>Description</th>
+    </tr>
+    {{#each news}}
+        <tr>
+            <td>
+                {{this.source.name}}
+            </td>
+            <td>
+                {{this.author}}
+            </td>
+            <td>
+                {{this.title}}
+            </td>
+            <td>
+                {{this.description}}
+            </td>
+        </tr>
+    {{/each}}
+</table>

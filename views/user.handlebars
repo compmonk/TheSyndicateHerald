@@ -1,0 +1,31 @@
+<h1>Some information about you</h1>
+<h2>Username: {{user.username}}</h2>
+<h2>First Name: {{user.firstName}}</h2>
+<h2>Last Name: {{user.lastName}}</h2>
+<h2>Email: {{user.email}}</h2>
+<h2>Sources: {{user.sources}}</h2>
+<h2>Categories: {{user.categories}}</h2>
+
+<table>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    {{#each sources}}
+        <tr>
+            <td>
+                {{this.id}}
+            </td>
+            <td>
+                {{this.name}}
+            </td>
+            <td>
+                {{this.description}}
+            </td>
+        </tr>
+    {{/each}}
+</table>
+
+
+<a href="/logout">Logout</a>
