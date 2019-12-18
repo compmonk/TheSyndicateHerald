@@ -1,6 +1,10 @@
 #The Syndicate Herald
 
-A news aggregator website, that will show your daily customized news feeds. This website will gather news from [newsapi.org](https://newsapi.org/) API endpoints and will showcase the daily news for a user. A user can login into this website and choose his source preferences (news channels), and category preference (news categories) and he will see the latest feed pulled up for him according to his preferences. Each news article will have a title, description and a link to read further about the news article. Furthermore he can search for news articles within specified date ranges by search terms.
+The Syndicate Herald is a news aggregator website, that will show your daily customized news feeds. This website will 
+gather news from [newsapi.org](https://newsapi.org/) API endpoints and will showcase the daily news for a user. A user can login into this 
+website and choose his source preferences (news channels) and he will see the latest feed pulled up for him according 
+to his preferences. Each news article will have a title, description and a link to read further about the news article.
+Furthermore he can search for news articles containing keywords.
 
 ### Features:
 
