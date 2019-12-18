@@ -88,11 +88,6 @@ router.get("/categories", async (request, response) => {
     ])
 });
 
-// users web api
-router.get("/users", async (request, response) => {
-    response.send(await users.getUsers())
-});
-
 // username check web api
 router.post("/username", async (request, response) => {
     const username = request.body['username'];

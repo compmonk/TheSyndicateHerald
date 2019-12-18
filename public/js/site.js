@@ -72,10 +72,10 @@ function signUp() {
             $("#password-error-text").text("Please enter a valid Password");
         }
 
-        if (password.length < 8 || 15 < password.length) {
+        if (password.length < 6 || 15 < password.length) {
             valid = false;
             $("#password-error-container").removeClass("hidden");
-            $("#password-error-text").text("Password length must be between 8 and 15 characters");
+            $("#password-error-text").text("Password length must be between 6 and 15 characters");
         }
 
         if (valid) {
