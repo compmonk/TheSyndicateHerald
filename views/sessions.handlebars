@@ -1,0 +1,20 @@
+<table class="table">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Start</th>
+        <th scope="col">End</th>
+        <th scope="col">Duration</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each sessions}}
+        <tr>
+            <th scope="row">{{@index}}</th>
+            <td>{{this.startTime}}</td>
+            <td>{{this.endTime}}</td>
+            <td>{{this.duration}}</td>
+        </tr>
+    {{/each}}
+    </tbody>
+</table>

@@ -1,32 +1,3 @@
-const extend = function (formArray) {
-    let result = {};
-    for (let i = 0; i < formArray.length; i++) {
-        result[formArray[i]['name']] = formArray[i]['value'];
-    }
-    return result;
-};
-
-function usernameCheck() {
-    const signupForm = document.getElementById("signup-form");
-
-    if (signupForm) {
-        $("#username-error-container").addClass("hidden");
-        $("#username-error-text").text("");
-        const username = document.getElementById("username").value;
-        if (username && typeof username === "string") {
-            console.log(username)
-            $.post("/username", {username: username}).then(function (response) {
-                    if (!response["valid"]) {
-                        console.log(`${username} not available`)
-                        $("#username-error-container").removeClass("hidden");
-                        $("#username-error-text").text("Username not available");
-                    }
-                }
-            );
-        }
-    }
-}
-
 function cleanSignUpForm() {
     $("#first-name-error-container").addClass("hidden");
     $("#first-name-error-text").text("");
@@ -68,6 +39,13 @@ function signUp() {
             valid = false;
             $("#email-error-container").removeClass("hidden");
             $("#email-error-text").text("Please enter a valid Email");
+        } else {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (!re.test(String(email).toLowerCase())) {
+                valid = false;
+                $("#email-error-container").removeClass("hidden");
+                $("#email-error-text").text("Please enter a valid Email");
+            }
         }
 
         const username = document.getElementById("username").value;
@@ -75,6 +53,16 @@ function signUp() {
             valid = false;
             $("#username-error-container").removeClass("hidden");
             $("#username-error-text").text("Please enter a valid Username");
+        } else {
+            $.post("/username", {username: username}).then(function (response) {
+                    if (!response["valid"]) {
+                        valid = false
+                        console.log(`${username} not available`)
+                        $("#username-error-container").removeClass("hidden");
+                        $("#username-error-text").text("Username not available");
+                    }
+                }
+            );
         }
 
         const password = document.getElementById("password").value;
@@ -87,62 +75,12 @@ function signUp() {
         if (password.length < 8 || 15 < password.length) {
             valid = false;
             $("#password-error-container").removeClass("hidden");
-            $("#password-error-text").text("Please length must be between 8 and 15 characters");
+            $("#password-error-text").text("Password length must be between 8 and 15 characters");
         }
 
         if (valid) {
-            $.post("/signup", extend($("#signup-form").serializeArray()));
-        } else {
-            $("#signup-form").submit(function (e) {
-                e.preventDefault();
-            })
-        }
-    }
-}
-
-function login() {
-    const loginForm = document.getElementById("login-form");
-
-    let valid = true;
-
-    if (loginForm) {
-        const userame = document.getElementById("login-username").value;
-        if (userame === "" || typeof userame !== "string") {
-            valid = false;
-            $("#login-username-error-container").removeClass("hidden");
-            $("#login-username-error-text").text("Please enter your username");
+            $("#signup-button").prop('disabled', false);
         }
 
-        const password = document.getElementById("login-password").value;
-        if (password === "" || typeof password !== "string") {
-            valid = false;
-            $("#login-password-error-container").removeClass("hidden");
-            $("#login-password-error-text").text("Please enter your password");
-        }
-
-        if (valid) {
-            $.post("/login", extend($("#login-form").serializeArray()))
-                .done(function (msg) {
-                    console.log("logged in");
-                    console.log(msg)
-                })
-                .fail(function (jqXHR, status, error) {
-                    console.log("invalid username/password")
-                    console.log(jqXHR.responseText);
-                    console.log(status);
-                    console.log(error);
-                    if (status === 403) {
-                        $("#login-form-error-container").removeClass("hidden");
-                        $("#login-form-error-text").text("Please enter correct username and password");
-                    } else if (status === 404) {
-                        $("#login-form-error-container").removeClass("hidden");
-                        $("#login-form-error-text").text(`username ${userame} not found`);
-                    }
-                });
-        } else {
-            $("#signup-form").submit(function (e) {
-                e.preventDefault();
-            })
-        }
     }
 }

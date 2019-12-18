@@ -102,7 +102,15 @@ router.get("/feed", async (request, response) => {
 
 // user sessions
 router.get("/sessions", async (request, response) => {
-    const sessionsList = await sessions.getSessionByUserId(request.session.userID);
+    let sessionsList = await sessions.getSessionByUserId(request.session.userID);
+    sessionsList = sessionsList.map(function (session) {
+        if (!session.isActive) {
+            session.duration = moment.duration(session.endTime - session.startTime).humanize()
+        } else {
+            session.duration = moment.duration(session.startTime - new Date()).humanize(true)
+        }
+        return session;
+    });
     response.render("sessions", {
         sessions: sessionsList,
         layout: 'user',
@@ -221,5 +229,6 @@ router.post("/search", async (request, response) => {
         }
     })
 });
+
 
 module.exports = router;

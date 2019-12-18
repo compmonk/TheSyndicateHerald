@@ -1,4 +1,5 @@
 const MUUID = require('uuid-mongodb');
+const moment = require('moment');
 
 const collections = require("./collection");
 
@@ -159,8 +160,8 @@ async function getSessionByUserId(userId) {
         const sessionsCollection = await sessions();
         return  await sessionsCollection.find(
             {userId: user._id},
-            {projection:{"_id": false}}
-            ).toArray();
+            {projection:{"_id": false, userId: false}})
+            .sort({'startDate': -1}).toArray();
     } catch (e) {
         throw e
     }

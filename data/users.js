@@ -372,15 +372,20 @@ async function isAuthenticated(username, password) {
 async function getUsers() {
     const usersCollection = await users();
 
-    return usersCollection.find({}, {
+    let usersList = await usersCollection.find({}, {
         projection:
             {
                 "_id": false,
                 "username": true,
                 "firstName": true,
-                "lastName": true,
+                "lastName": true
             }
     }).toArray();
+    return usersList.map(function (user) {
+        user.id = user.username;
+        user.text = `${user.username} (${user.firstName} ${user.lastName})`;
+        return user
+    });
 }
 
 module.exports = {
