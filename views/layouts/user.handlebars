@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="/node_modules/select2/dist/css/select2.css">
     <link rel="stylesheet" href="/node_modules/select2-bootstrap-theme/dist/select2-bootstrap.css">
     <script src="/node_modules/select2/dist/js/select2.full.js"></script>
+
+    <!--  Custom JS  -->
+    <script src="/public/js/site.js"></script>
 </head>
 <body>
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
@@ -30,23 +33,23 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
 
-            <li class="nav-item active">
+            <li class="nav-item active" id="nav-feed">
                 <a class="nav-link" href={{url.feed}}>Feed<span class="sr-only">(current)</span></a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" id="nav-likes">
                 <a class="nav-link" href={{url.likes}}>Likes</a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" id="nav-shared">
                 <a class="nav-link" href={{url.shared}}>Shared</a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" id="nav-sessions">
                 <a class="nav-link" href={{url.sessions}}>Session</a>
             </li>
 
-            <li class="nav-item">
+            <li class="nav-item" id="nav-profile">
                 <a class="nav-link" href={{url.profile}}>Profile</a>
             </li>
 
@@ -56,17 +59,24 @@
 
         </ul>
 
-        <form class="form-inline my-2 my-lg-0 input-group col-md-4">
-            <input class="form-control my-sm-2" type="search" placeholder="keywords, source, category"
+        <form class="form-inline my-2 my-lg-0 input-group col-md-4" id="search-form" action={{url.search}} method="post">
+            <input class="form-control my-sm-2" type="search" placeholder="Search news by keywords" name="keywords"
                    aria-label="Search">
             <div class="input-group-append">
-                <button class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
+                <button id="search-button" class="btn btn-outline-success my-2 my-sm-2" type="submit">Search</button>
             </div>
         </form>
 
 
     </div>
 </nav>
+<div class="container">
+    <div class="col-md-12 title-logo">
+        <div class="align-content-center">
+            <img src="/public/img/logo.png" alt="The Syndicate Herald">
+        </div>
+    </div>
+</div>
 {{{body}}}
 </body>
 </html>

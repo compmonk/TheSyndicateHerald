@@ -7,7 +7,6 @@ const {newsapi} = require("../core/news");
 const users = require("../data/users");
 const sessions = require("../data/sessions");
 const userNews = require("../data/userNews");
-const jsonUtils = require("../public/js/jsonUtils");
 
 
 const router = express.Router();
@@ -29,18 +28,17 @@ router.get("/", async (request, response) => {
                         text: source.name
                     }
                 });
-                let sourcesSelected = request.session.user.sources.map(function (s) {
-                    const source = sources.filter((x) => (x.id === s))[0];
-                    return {
-                        id: source.id,
-                        text: source.text
-                    }
-                });
-                console.log(JSON.parse(JSON.stringify(sourcesSelected)));
+
                 response.render("user", {
                     user: request.session.user,
                     sources: sources,
-                    sourcesSelected: JSON.stringify(sourcesSelected),
+                    sourcesSelected: JSON.stringify(request.session.user.sources.map(function (s) {
+                        const source = sources.filter((x) => (x.id === s))[0];
+                        return {
+                            id: source.id,
+                            text: source.text
+                        }
+                    })),
                     layout: 'user',
                     url: {
                         profile: `/${request.session.user.username}/`,
@@ -66,9 +64,8 @@ router.post("/", async (request, response) => {
         if (request.body["sources"]) {
             request.session.user = await users.updateUser(request.session.userID, request.body["sources"], true);
         } else {
-            request.session.user = await users.updateUser(request.session.userID, result);
+            request.session.user = await users.updateUser(request.session.userID, request.body);
         }
-
         response.redirect(`/${request.session.user.username}/feed`)
     } catch (e) {
         response.status(e.http_code).send(e.message);
@@ -182,18 +179,30 @@ router.post("/share", async (request, response) => {
 });
 
 // search news page
-router.get("/search", async (request, response) => {
-    response.render("search", {
-        layout: 'user',
-        url: {
-            profile: `/${request.session.user.username}/`,
-            feed: `/${request.session.user.username}/feed`,
-            likes: `/${request.session.user.username}/likes`,
-            sessions: `/${request.session.user.username}/sessions`,
-            shared: `/${request.session.user.username}/shared`,
-            search: `/${request.session.user.username}/search`
-        }
-    })
+router.post("/search", async (request, response) => {
+    try {
+        newsapi.v2.topHeadlines({
+            q: request.body['keywords']
+        }).then(res => {
+            response.render("feed", {
+                news: res["articles"].map(function (article) {
+                    article.from = moment.duration(moment(article.publishedAt) - moment.now()).humanize(true)
+                    return article
+                }),
+                layout: 'user',
+                url: {
+                    profile: `/${request.session.user.username}/`,
+                    feed: `/${request.session.user.username}/feed`,
+                    likes: `/${request.session.user.username}/likes`,
+                    sessions: `/${request.session.user.username}/sessions`,
+                    shared: `/${request.session.user.username}/shared`,
+                    search: `/${request.session.user.username}/search`
+                }
+            })
+        });
+    } catch (e) {
+        console.log(e)
+    }
 });
 
 // search news page

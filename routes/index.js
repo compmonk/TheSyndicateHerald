@@ -16,6 +16,13 @@ const constructorMethod = app => {
         }
     }));
 
+    // logging middleware
+    const logger = function (request, response, next) {
+        console.log(`[${new Date().toUTCString()}]: ${request.method}\t${request.originalUrl}\t\t${isLoggedIn(request) ? 'Authenticated' : 'Not Authenticated'}`);
+        next()
+    };
+    app.use(logger);
+
     app.use("/", rootRoutes);
 
     app.use("/:username", function (request, response, next) {
@@ -30,7 +37,11 @@ const constructorMethod = app => {
     app.use("/:username", userRoutes);
 
     app.use("*", (request, response) => {
-        response.status(404).json({error: "Route not found"});
+        if (isLoggedIn(request)) {
+            response.redirect(`/${request.session.user.username}/feed`)
+        } else {
+            response.redirect("/");
+        }
     });
 };
 

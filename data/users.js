@@ -104,6 +104,14 @@ async function updateUser(userId, updatedUser, addSource = false) {
     if (updatedUser === undefined || updatedUser === null) {
         errors['user'] = "user object not defined";
         error.http_code = 400
+    } else if (addSource) {
+        if (typeof updatedUser === "string") {
+            updatedUser = [updatedUser]
+        } else if (updatedUser.length === 0) {
+            updatedUser = ['bbc-news'];
+            // errors['sources'] = "invalid type of sources";
+            // error.http_code = 400
+        }
     } else if (typeof updatedUser !== "object") {
         errors['user'] = "invalid type of user";
         error.http_code = 400
@@ -120,7 +128,7 @@ async function updateUser(userId, updatedUser, addSource = false) {
         const usersCollection = await users();
 
         if (addSource) {
-            return await usersCollection.updateOne({_id: user._id}, {$push: {"sources" : {$each: updatedUser}}})
+            return await usersCollection.updateOne({_id: user._id}, {$push: {"sources": {$each: updatedUser}}})
                 .then(async function (updateInfo) {
                     if (updateInfo.modifiedCount === 0) {
                         error.message = JSON.stringify({

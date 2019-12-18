@@ -1,10 +1,10 @@
-<div class="container">
-    <div class="col-md-12 title-logo">
-        <div class="align-content-center">
-            <img src="/public/img/logo.png" alt="The Syndicate Herald">
-        </div>
-    </div>
-</div>
+<script>
+    $("#nav-feed").removeClass("active");
+    $("#nav-likes").removeClass("active");
+    $("#nav-shared").removeClass("active");
+    $("#nav-sessions").removeClass("active");
+    $("#nav-profile").addClass("active");
+</script>
 <div class="container profile">
     <form id="update-form" method="post" action="/{{user.username}}/">
         <div class="form-group row">

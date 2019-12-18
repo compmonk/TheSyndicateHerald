@@ -12,7 +12,6 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded());
 
 
-
 // home page
 router.get("/", async (request, response) => {
     if (isLoggedIn(request)) {
@@ -50,8 +49,7 @@ router.post("/login", async (request, response) => {
             response.redirect(`/${user.username}/feed`);
         }
     } catch (e) {
-        response.setHeader('content-type', 'application/json');
-        response.status(e.http_code).send(e.message)
+        response.status(e.http_code).render("home", Object.assign({layout: "home"}, JSON.parse(e.message)))
     }
 });
 
@@ -95,6 +93,15 @@ router.get("/users", async (request, response) => {
     response.send(await users.getUsers())
 });
 
+// username check web api
+router.post("/username", async (request, response) => {
+    const username = request.body['username'];
+    if (username && await users.usernameAvailable(username)) {
+        response.send({'valid': true})
+    } else {
+        response.send({'valid': false})
+    }
+});
 
 
 module.exports = router;

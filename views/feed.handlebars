@@ -1,12 +1,19 @@
+<script>
+    $("#nav-feed").addClass("active");
+    $("#nav-likes").removeClass("active");
+    $("#nav-shared").removeClass("active");
+    $("#nav-sessions").removeClass("active");
+    $("#nav-profile").removeClass("active");
+</script>
 <div class="container">
-    <div class="row">
-        {{#each news}}
+    {{#if news}}
+        <div class="row">
+            {{#each news}}
             <div class="col-md-12">
                 <div class="card" style="width: auto">
                     <img class="card-img-top" src={{this.urlToImage}} alt="Card image cap">
                     <div class="card-body">
                             <h5 class="card-title">{{this.title}} - {{this.author}}</h5>
-<!--                            <h5 class="card-title float-right"></h5>-->
                         <h6 class="card-text">{{this.description}}</h6>
                         <p class="card-text">{{this.content}}</p>
                         <div class="card-footer">
@@ -18,4 +25,9 @@
             </div>
         {{/each}}
     </div>
+    {{else}}
+        <div>
+            <h2>Sorry nothing to show. Try another search term or different sources</h2>
+        </div>
+    {{/if}}
 </div>
