@@ -56,8 +56,8 @@ function signUp() {
         } else {
             $.post("/username", {username: username}).then(function (response) {
                     if (!response["valid"]) {
-                        valid = false
-                        console.log(`${username} not available`)
+                        valid = false;
+                        $("#signup-button").prop('disabled', true);
                         $("#username-error-container").removeClass("hidden");
                         $("#username-error-text").text("Username not available");
                     }
@@ -80,7 +80,8 @@ function signUp() {
 
         if (valid) {
             $("#signup-button").prop('disabled', false);
+        } else {
+            $("#signup-button").prop('disabled', true);
         }
-
     }
 }
