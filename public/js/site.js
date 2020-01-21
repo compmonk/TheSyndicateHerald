@@ -85,3 +85,19 @@ function signUp() {
         }
     }
 }
+
+function like(newsId) {
+    console.log(`#like-${newsId}`);
+    $(`#like-${newsId}`).addClass("collapse");
+    $(`#dislike-${newsId}`).removeClass("collapse");
+}
+
+function dislike(newsId) {
+    console.log(`#like-${newsId}`);
+    $(`#like-${newsId}`).removeClass("collapse");
+    $(`#dislike-${newsId}`).addClass("collapse");
+}
+
+function share(news) {
+
+}
