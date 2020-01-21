@@ -1,8 +1,8 @@
 const MUUID = require('uuid-mongodb');
-const uuidv1 = require('uuid/v1');
+const uuidv3 = require('uuid/v3');
 
 const collections = require("./collection");
-const newsCollection = collections.news;
+const newsCollections = collections.news;
 
 async function addNews(newNews) {
     const error = new Error();
@@ -67,11 +67,11 @@ async function addNews(newNews) {
         throw error
     }
 
-    newNews._id = uuidv1({msecs: new Date(newNews.publishedAt).getTime()});
+    newNews._id = MUUID.from(uuidv3(newNews.url, uuidv3.URL));
     newNews.likedBy = [];
     newNews.dislikedBy = [];
 
-    const newsCollection = await news();
+    const newsCollection = await newsCollections();
 
     const insertInfo = await newsCollection.insertOne(newNews);
 
@@ -89,6 +89,56 @@ async function addNews(newNews) {
 
     return await getNewsById(newId);
 
+}
+
+async function addNewsList(newsList) {
+    const error = new Error();
+    error.http_code = 200;
+    const errors = {};
+
+    if (newsList === undefined || newsList === null) {
+        errors['news'] = "news object not defined";
+        error.http_code = 400
+    } else if (typeof newsList !== "object") {
+        errors['news'] = "invalid type of news";
+        error.http_code = 400
+    } else if (newsList.length === 0) {
+        errors['news'] = "no news to add";
+        error.http_code = 400
+    }
+
+    if (error.http_code !== 200) {
+        error.message = JSON.stringify({'errors': errors});
+        throw error
+    }
+
+    const newsCollection = await newsCollections();
+
+    const finalNewsList = newsList.map(function (news) {
+        news._id = MUUID.from(uuidv3(news.url, uuidv3.URL));
+        news.likedBy = [];
+        news.dislikedBy = [];
+        return news;
+    });
+
+    try {
+        const insertInfo = await newsCollection.insertMany(finalNewsList);
+
+        if (insertInfo.insertedCount === 0) {
+            error.message = JSON.stringify({
+                'error': "could not create news",
+                'object': newsList,
+                'errors': errors
+            });
+            error.http_code = 400;
+            throw error
+        }
+        return await getNewsList(insertInfo.insertedIds);
+    } catch (e) {
+        return await getNewsList(finalNewsList.map(news => {
+            return news._id
+        }));
+    }
 }
 
 async function getNewsById(newsId) {
@@ -120,7 +170,7 @@ async function getNewsById(newsId) {
         throw error
     }
 
-    const newsCollection = await newsCollection();
+    const newsCollection = await newsCollections();
 
     const news = await newsCollection.findOne({_id: newsId});
 
@@ -134,6 +184,52 @@ async function getNewsById(newsId) {
     }
 
     return news;
+}
+
+async function getNewsList(newsIds) {
+    const error = new Error();
+    error.http_code = 200;
+    const errors = {};
+
+    if (newsIds === undefined || newsIds === null) {
+        errors['newsIds'] = "newsIds is not defined";
+        error.http_code = 400
+    } else if (newsIds.length === 0) {
+        errors['newsIds'] = "newsIds is empty";
+        error.http_code = 400
+    }
+
+    let finalNewsIds = [];
+    for (let i = 0; i < newsIds.length; i++) {
+        const newsId = newsIds[i];
+        if (typeof newsId === "string") {
+            try {
+                finalNewsIds.push(MUUID.from(newsId));
+            } catch (e) {
+                errors[newsId] = e.message;
+                error.http_code = 400;
+                error.message = JSON.stringify({
+                    errors: errors
+                });
+            }
+        } else {
+            try {
+                finalNewsIds.push(MUUID.from(newsId));
+            } catch (e) {
+                errors[newsId.toString()] = "id is not defined";
+                error.http_code = 400;
+                error.message = JSON.stringify({
+                    errors: errors
+                });
+            }
+        }
+    }
+
+    if (finalNewsIds.length) {
+        const newsCollection = await newsCollections();
+        return newsCollection.find({_id: {$in: finalNewsIds}}).toArray();
+    }
+    return [];
 }
 
 async function getNewsByPublishedAt(publishedAt) {
@@ -177,7 +273,7 @@ async function updateNews(newsId, updatedNews) {
     try {
         await getNewsById(newsId);
 
-        const newsCollection = await news();
+        const newsCollection = await newsCollections();
 
         return await newsCollection.updateOne({_id: newsId}, {$set: updatedNews})
             .then(async function (updateInfo) {
@@ -199,7 +295,9 @@ async function updateNews(newsId, updatedNews) {
 
 module.exports = {
     addNews,
+    addNewsList,
     getNewsById,
+    getNewsList,
     getNewsByPublishedAt,
     updateNews
 };

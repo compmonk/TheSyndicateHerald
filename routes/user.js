@@ -1,10 +1,12 @@
 const express = require("express");
 const moment = require('moment');
 const bodyParser = require("body-parser");
+const MUUID = require("uuid-mongodb");
 
 const {isLoggedIn} = require("../core/login");
 const {newsapi} = require("../core/news");
 const users = require("../data/users");
+const news = require("../data/news");
 const sessions = require("../data/sessions");
 const userNews = require("../data/userNews");
 
@@ -79,21 +81,28 @@ router.get("/feed", async (request, response) => {
         newsapi.v2.topHeadlines({
             sources: request.session.user.sources.join()
         }).then(res => {
-            response.render("feed", {
-                news: res["articles"].map(function (article) {
-                    article.from = moment.duration(moment(article.publishedAt) - moment.now()).humanize(true)
-                    return article
-                }),
-                layout: 'user',
-                url: {
-                    profile: `/${request.session.user.username}/`,
-                    feed: `/${request.session.user.username}/feed`,
-                    likes: `/${request.session.user.username}/likes`,
-                    sessions: `/${request.session.user.username}/sessions`,
-                    shared: `/${request.session.user.username}/shared`,
-                    search: `/${request.session.user.username}/search`
+            news.addNewsList(res["articles"]).then(newsList => {
+                    response.render("feed", {
+                        news: newsList.map(function (article) {
+                            article.id = MUUID.from(article._id).toString();
+                            article.from = moment.duration(moment(article.publishedAt) - moment.now()).humanize(true);
+                            article.likes = article.likedBy.length;
+                            article.dislikes = article.dislikedBy.length;
+                            article.isLiked = true;
+                            return article
+                        }),
+                        layout: 'user',
+                        url: {
+                            profile: `/${request.session.user.username}/`,
+                            feed: `/${request.session.user.username}/feed`,
+                            likes: `/${request.session.user.username}/likes`,
+                            sessions: `/${request.session.user.username}/sessions`,
+                            shared: `/${request.session.user.username}/shared`,
+                            search: `/${request.session.user.username}/search`
+                        }
+                    })
                 }
-            })
+            );
         });
     } catch (e) {
         console.log(e)
