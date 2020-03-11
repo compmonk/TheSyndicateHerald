@@ -147,3 +147,7 @@ You can scroll through your News Feeds.It will contain the latest news and top h
 #### 5. See your sessions.
 
 You can see your activity and their time in the Sessions tab.
+
+### Demo
+
+[![The Syndicate Herald](public/img/logo.png)](https://youtu.be/-i1pzRnUenw "The Syndicate Herald")
