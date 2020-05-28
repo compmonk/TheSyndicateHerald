@@ -1,0 +1,9 @@
+{
+  "mongoConfig": {
+    "serverUrl": "",
+    "database": ""
+  },
+  "newsapi": {
+    "key": ""
+  }
+}
